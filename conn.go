@@ -1,8 +1,14 @@
+/*
+* @Author: Ins
+* @Date:   2018-10-10 09:54:12
+* @Last Modified by:   Ins
+* @Last Modified time: 2018-10-10 10:11:46
+*/
 package main
 
 import (
     "fmt"
-    "github.com/ceph/go-ceph/rados"
+    "github.com/ceph/go-ceph/rados" 
 )
 
 
