@@ -1,7 +1,7 @@
 ## Connect to the ceph cluster through the [go-ceph](https://github.com/ceph/go-ceph) and implement the I/O between redos and bytes(RAM)
 
 ### Compile the go scripts to dynamic library(.so) by the [Cgo](https://github.com/golang/go/wiki/cgo) in Goland.
-`go build -buildmode=c-shared -o /python/xxx.so xxx.go `
+`go build -buildmode=c-shared -o rados.so rados.go `
 
 ### In python3
 
