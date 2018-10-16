@@ -1,29 +1,29 @@
-## 通过go-ceph模块连接ceph集群，并实现rados对象和文件之间的读写。
+## Connect to the ceph cluster through the go-ceph module and implement the I/O between redos and bytes(RAM)
 
-### 通过go语言的Cgo模块，将go脚本编译成动态库.so文件，用于其他语言的调用
+### Compile the go scripts to dynamic library(.so) by the module Cgo in Goland.
 `go build -buildmode=c-shared -o /python/xxx.so xxx.go `
 
-#### 通过python3，存储字节流到rados对象
+#### Push Bytes to the rados object in python3
 
->脚本中将变量参数进行utf8编码，因为so文件中c语言的编码方式为ascii，一个字符为一个字节；python3编码为unicode，一个字符为两个字节；如果参数及字节流中仅有英文，可以使用encode('ascii')编码，但考虑到中文兼容性，建议使用encode('utf-8')，
+>Due to the encoding in C(.so) is ascii(1 character - 1 byte) and in python3 is unicode(1 character - 2 bytes), we use the utf-8(1 character - 1 byte in English, 1 character - 3 bytes in Chinese) encoding for compatibly
 
 ```
 import ctypes
 
 if __name__ =="__main__":
-	ToObject = ctypes.CDLL('toobject.so').ToObject # 建立CDLL对象
-	ToObject.restype = ctypes.c_char_p # 设置返回数据类型
+	ToObject = ctypes.CDLL('toobject.so').ToObject # CDLL
+	ToObject.restype = ctypes.c_char_p # declare the expected type returned
 
-	# 参数
-	cluster_name = "ceph".encode('utf-8') # 集群名称 string
-	user_name    = "client.objstore".encode('utf-8') # 用户名称 string
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # 配置文件地址 string
-	pool_name    = "objstore".encode('utf-8') # pool名称 string
-	object_name  = "object_name".encode('utf-8') # 写入对象名 string
-	content      = "content".encode('utf-8') # 写入数据 string
-	offset       = ctypes.c_ulonglong(0)) # 偏移量，从第几字节开始写 ctypes.c_ulonglong
+	# parameters
+	cluster_name = "ceph".encode('utf-8') # cluster name *string*
+	user_name    = "client.objstore".encode('utf-8') # user name *string*
+	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path *string*
+	pool_name    = "objstore".encode('utf-8') # pool名称 *string*
+	object_name  = "object_name".encode('utf-8') # object name *string*
+	data         = "content".encode('utf-8') # data to be written *string*
+	offset       = ctypes.c_ulonglong(0)) # write strat from where *ctypes.c_ulonglong*
 
-	#执行
-	result = ToObject() # 返回写入结果 bytes()
+	# execute
+	result = ToObject(cluster_name, user_name, conf_file, pool_name, object_name, data, offset) # return *bytes*
 	print(result.decode())
 ```
