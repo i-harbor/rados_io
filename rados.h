@@ -57,9 +57,11 @@ extern char* ListObj(char* p0, char* p1, char* p2, char* p3);
 
 extern char* FromObj(char* p0, char* p1, char* p2, char* p3, GoInt p4, char* p5, GoUint64 p6);
 
-extern char* ToObject(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, GoUint64 p6);
+extern char* WriteToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, GoUint64 p6);
 
-extern char* DelObject(char* p0, char* p1, char* p2, char* p3, char* p4);
+extern char* AppendToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5);
+
+extern char* DelObj(char* p0, char* p1, char* p2, char* p3, char* p4);
 
 #ifdef __cplusplus
 }

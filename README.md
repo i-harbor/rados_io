@@ -14,8 +14,8 @@ import ctypes
 
 if __name__ =="__main__":
 	rados = ctypes.CDLL('rados.so')
-	ToObject = rados.ToObject # CDLL
-	ToObject.restype = ctypes.c_char_p # declare the expected type returned
+	ToObj = rados.ToObj # CDLL
+	ToObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
 	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
@@ -27,7 +27,7 @@ if __name__ =="__main__":
 	offset       = ctypes.c_ulonglong(0)) # write strat from where. type:ctypes.c_ulonglong
 
 	# execute
-	result = ToObject(cluster_name, user_name, conf_file, pool_name, object_name, data, offset) # return. type:bytes
+	result = ToObj(cluster_name, user_name, conf_file, pool_name, object_name, data, offset) # return. type:bytes
 	# print(result.decode())
 ```
 
@@ -62,8 +62,8 @@ import ctypes
 
 if __name__ =="__main__":
 	rados = ctypes.CDLL('rados.so')
-	DelObject = rados.DelObject # CDLL
-	DelObject.restype = ctypes.c_char_p # declare the expected type returned
+	DelObj = rados.DelObj # CDLL
+	DelObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
 	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
@@ -73,7 +73,7 @@ if __name__ =="__main__":
 	object_name  = "object_name".encode('utf-8') # object name. type:string
 
 	# execute
-	result = DelObject(cluster_name, user_name, conf_file, pool_name, block_size, object_name) # return. type:bytes
+	result = DelObj(cluster_name, user_name, conf_file, pool_name, block_size, object_name) # return. type:bytes
 	# print(result.decode())
 ```
 
