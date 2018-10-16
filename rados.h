@@ -59,6 +59,8 @@ extern char* FromObj(char* p0, char* p1, char* p2, char* p3, GoInt p4, char* p5,
 
 extern char* WriteToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, GoUint64 p6);
 
+extern char* WriteFullToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5);
+
 extern char* AppendToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5);
 
 extern char* DelObj(char* p0, char* p1, char* p2, char* p3, char* p4);
