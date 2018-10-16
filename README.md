@@ -3,9 +3,11 @@
 ### Compile the go scripts to dynamic library(.so) by the module Cgo in Goland.
 `go build -buildmode=c-shared -o /python/xxx.so xxx.go `
 
-#### Push Bytes to the rados object in python3
+### In python3
 
 >Due to the encoding in C(.so) is ascii(1 character - 1 byte) and in python3 is unicode(1 character - 2 bytes), we use the utf-8(1 character - 1 byte in English, 1 character - 3 bytes in Chinese) encoding for compatibly
+
+#### Push Bytes to the rados object
 
 ```
 import ctypes
