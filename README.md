@@ -7,7 +7,7 @@
 
 >Due to the encoding in C(.so) is ascii(1 character - 1 byte) and in python3 is unicode(1 character - 2 bytes), we use the utf-8(1 character - 1 byte in English, 1 character - 3 bytes in Chinese) encoding for compatibly
 
-#### Push bytes to the rados object(write、writefull、append)
+- Push bytes to the rados object(write、writefull、append)
 
 ```
 import ctypes
@@ -44,7 +44,7 @@ if __name__ =="__main__":
 	# print(result.decode())
 ```
 
-#### Get bytes from the rados object
+- Get bytes from the rados object
 
 ```
 import ctypes
@@ -68,7 +68,7 @@ if __name__ =="__main__":
 	# print(bytesOut.decode())
 ```
 
-#### Delete an object in pool
+- Delete an object in pool
 
 ```
 import ctypes
@@ -90,7 +90,7 @@ if __name__ =="__main__":
 	# print(result.decode())
 ```
 
-#### List the objects in pool
+- List the objects in pool
 >Just printed in terminal because of the function [ListObjects](https://godoc.org/github.com/ceph/go-ceph/rados#IOContext.ListObjects) in [go-ceph](https://github.com/ceph/go-ceph)
 
 ```
