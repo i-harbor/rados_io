@@ -2,14 +2,12 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-10 10:12:05
+* @Last Modified time: 2018-10-16 10:12:20
 */
 package main
 
 import (
     "fmt"
-    "os"
-    "io/ioutil"
     "github.com/ceph/go-ceph/rados"
 )
 
@@ -37,15 +35,6 @@ func ObjectListFunc(oid string) {
     fmt.Println(oid)
 }
 
-func ReadFileToBytes(filePth string) ([]byte, error) {
-    f, err := os.Open(filePth)
-    if err != nil {
-        return nil, err
-    }
-    defer f.Close()
-    return ioutil.ReadAll(f)
-}
-
 func main() {
     conn, err := newConn()
     if err != nil {
@@ -64,17 +53,10 @@ func main() {
     defer ioctx.Destroy()
 
     //列出pool中所有objects
-    fmt.Println("before add a object. object list:")
     ioctx.ListObjects(ObjectListFunc)
 
-    //open a file
-    bytesIn, err := ReadFileToBytes("/root/nginx-1.13.12.tar.gz")
-    // fmt.Println(string(bytesIn))
-
-    // write data to object
-    err = ioctx.Write("nginx", bytesIn, 0)
-
-    fmt.Println("after add a object. object list:")
-    ioctx.ListObjects(ObjectListFunc)
-
+    bytesOut := make([]byte, 100)
+    ret, err := ioctx.Read("abc", bytesOut, 0)
+    bytesOut = bytesOut[:ret]
+    fmt.Println(string(bytesOut))
 }
