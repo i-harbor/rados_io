@@ -40,7 +40,7 @@ if __name__ =="__main__":
 
 	# AppendToObj: appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
 	result = AppendToObj(cluster_name, user_name, conf_file, pool_name, oid, data) # return. type:bytes
-	
+
 	# print(result.decode())
 ```
 
@@ -91,7 +91,7 @@ if __name__ =="__main__":
 ```
 
 #### List the objects in pool
->Just printed in terminal cause of the function [ListObjects](https://godoc.org/github.com/ceph/go-ceph/rados#IOContext.ListObjects) in [go-ceph](https://github.com/ceph/go-ceph)
+>Just printed in terminal because of the function [ListObjects](https://godoc.org/github.com/ceph/go-ceph/rados#IOContext.ListObjects) in [go-ceph](https://github.com/ceph/go-ceph)
 
 ```
 import ctypes
