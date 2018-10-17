@@ -28,7 +28,7 @@ if __name__ =="__main__":
 	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
 	oid          = "oid".encode('utf-8') # object id. type:string
 	data         = "content".encode('utf-8') # data to be written. type:string
-	offset       = ctypes.c_ulonglong(0)) # write strat from where. type:ctypes.c_ulonglong
+	offset       = ctypes.c_ulonglong(0) # write strat from where. type:ctypes.c_ulonglong
 
 	# execute
 
@@ -41,7 +41,7 @@ if __name__ =="__main__":
 	# AppendToObj: appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
 	result = AppendToObj(cluster_name, user_name, conf_file, pool_name, oid, data) # return. type:bytes
 
-	# print(result.decode())
+	# print(result.decode()
 ```
 
 - Get bytes from the rados object
@@ -61,11 +61,11 @@ if __name__ =="__main__":
 	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
 	block_size   = 204800000 # Maximum number of bytes read each time. type:string
 	oid          = "oid".encode('utf-8') # object id. type:string
-	offset       = ctypes.c_ulonglong(0)) # where read strat from. type:ctypes.c_ulonglong
+	offset       = ctypes.c_ulonglong(0) # where read strat from. type:ctypes.c_ulonglong
 
 	# execute
 	bytesOut = FromObj(cluster_name, user_name, conf_file, pool_name, block_size, oid, offset) # return. type:bytes
-	# print(bytesOut.decode())
+	# print(bytesOut.decode()
 ```
 
 - Delete an object in pool
@@ -87,7 +87,7 @@ if __name__ =="__main__":
 
 	# execute
 	result = DelObj(cluster_name, user_name, conf_file, pool_name, block_size, oid) # return. type:bytes
-	# print(result.decode())
+	# print(result.decode()
 ```
 
 - List the objects in pool
@@ -109,5 +109,5 @@ if __name__ =="__main__":
 
 	# execute
 	result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. type:bytes
-	# print(result.decode())
+	# print(result.decode()
 ```
