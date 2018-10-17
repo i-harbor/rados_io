@@ -59,7 +59,7 @@ if __name__ =="__main__":
 	user_name    = "client.objstore".encode('utf-8') # user name. type:string
 	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:string
 	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
-	block_size   = 204800000 # Maximum number of bytes read each time. type:string
+	block_size   = 204800000 # Maximum number of bytes read each time. type:int
 	oid          = "oid".encode('utf-8') # object id. type:string
 	offset       = ctypes.c_ulonglong(0) # where read strat from. type:ctypes.c_ulonglong
 
@@ -86,7 +86,7 @@ if __name__ =="__main__":
 	oid          = "oid".encode('utf-8') # object id. type:string
 
 	# execute
-	result = DelObj(cluster_name, user_name, conf_file, pool_name, block_size, oid) # return. type:bytes
+	result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. type:bytes
 	# print(result.decode()
 ```
 
