@@ -22,12 +22,12 @@ if __name__ =="__main__":
 	AppendToObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
-	user_name    = "client.objstore".encode('utf-8') # user name. type:string
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:string
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
-	oid          = "oid".encode('utf-8') # object id. type:string
-	data         = "content".encode('utf-8') # data to be written. type:string
+	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
+	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
+	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
+	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
+	oid          = "oid".encode('utf-8') # object id. type:bytes
+	data         = "content".encode('utf-8') # data to be written. type:bytes
 	offset       = ctypes.c_ulonglong(0) # write strat from where. type:ctypes.c_ulonglong
 
 	# execute
@@ -55,12 +55,12 @@ if __name__ =="__main__":
 	FromObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
-	user_name    = "client.objstore".encode('utf-8') # user name. type:string
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:string
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
+	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
+	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
+	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
+	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
 	block_size   = 204800000 # Maximum number of bytes read each time. type:int
-	oid          = "oid".encode('utf-8') # object id. type:string
+	oid          = "oid".encode('utf-8') # object id. type:bytes
 	offset       = ctypes.c_ulonglong(0) # where read strat from. type:ctypes.c_ulonglong
 
 	# execute
@@ -79,11 +79,11 @@ if __name__ =="__main__":
 	DelObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
-	user_name    = "client.objstore".encode('utf-8') # user name. type:string
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:string
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
-	oid          = "oid".encode('utf-8') # object id. type:string
+	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
+	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
+	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
+	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
+	oid          = "oid".encode('utf-8') # object id. type:bytes
 
 	# execute
 	result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. type:bytes
@@ -102,10 +102,10 @@ if __name__ =="__main__":
 	ListObj.restype = ctypes.c_char_p # declare the expected type returned
 
 	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:string
-	user_name    = "client.objstore".encode('utf-8') # user name. type:string
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:string
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:string
+	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
+	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
+	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
+	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
 
 	# execute
 	result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. type:bytes
