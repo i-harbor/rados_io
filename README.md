@@ -1,7 +1,7 @@
 ## Connect to the ceph cluster through the [go-ceph](https://github.com/ceph/go-ceph) and implement the I/O between redos and bytes(RAM)
 
 ### Compile the go scripts to dynamic library(.so) by the [Cgo](https://github.com/golang/go/wiki/cgo) in Goland.
-`go build -buildmode=c-shared -o rados.so rados.go `
+`go build -buildmode=c-shared -o ./rados.so rados.go `
 
 ### In python3
 
@@ -13,7 +13,7 @@
 import ctypes
 
 if __name__ =="__main__":
-	rados = ctypes.CDLL('rados.so')
+	rados = ctypes.CDLL('./rados.so')
 	WriteToObj = rados.WriteToObj # CDLL
 	WriteToObj.restype = ctypes.c_char_p # declare the expected type returned
 	WriteFullToObj = rados.WriteFullToObj # CDLL
@@ -50,7 +50,7 @@ if __name__ =="__main__":
 import ctypes
 
 if __name__ =="__main__":
-	rados = ctypes.CDLL('rados.so')
+	rados = ctypes.CDLL('./rados.so')
 	FromObj = rados.FromObj # CDLL
 	FromObj.restype = ctypes.c_char_p # declare the expected type returned
 
@@ -74,7 +74,7 @@ if __name__ =="__main__":
 import ctypes
 
 if __name__ =="__main__":
-	rados = ctypes.CDLL('rados.so')
+	rados = ctypes.CDLL('./rados.so')
 	DelObj = rados.DelObj # CDLL
 	DelObj.restype = ctypes.c_char_p # declare the expected type returned
 
@@ -97,7 +97,7 @@ if __name__ =="__main__":
 import ctypes
 
 if __name__ =="__main__":
-	rados = ctypes.CDLL('rados.so')
+	rados = ctypes.CDLL('./rados.so')
 	ListObj = rados.ListObj # CDLL
 	ListObj.restype = ctypes.c_char_p # declare the expected type returned
 
