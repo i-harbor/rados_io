@@ -99,7 +99,6 @@ info = result.y # The error or success description. Type:bytes
 ```
 import ctypes
 
-if __name__ =="__main__":
 rados = ctypes.CDLL('./rados.so')
 ListObj = rados.ListObj # CDLL
 ListObj.restype = ctypes.c_char_p # declare the expected type returned
