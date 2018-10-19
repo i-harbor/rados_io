@@ -55,15 +55,29 @@ extern "C" {
 
 extern char* ListObj(char* p0, char* p1, char* p2, char* p3);
 
-extern char* FromObj(char* p0, char* p1, char* p2, char* p3, GoInt p4, char* p5, GoUint64 p6);
+/* Return type for FromObj */
+struct FromObj_return {
+	_Bool r0;
+	char* r1;
+};
 
-extern char* WriteToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, GoUint64 p6);
+extern struct FromObj_return FromObj(char* p0, char* p1, char* p2, char* p3, GoInt p4, char* p5, GoUint64 p6);
 
-extern char* WriteFullToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5);
+/* Return type for ToObj */
+struct ToObj_return {
+	_Bool r0;
+	char* r1;
+};
 
-extern char* AppendToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5);
+extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, char* p6, GoUint64 p7);
 
-extern char* DelObj(char* p0, char* p1, char* p2, char* p3, char* p4);
+/* Return type for DelObj */
+struct DelObj_return {
+	_Bool r0;
+	char* r1;
+};
+
+extern struct DelObj_return DelObj(char* p0, char* p1, char* p2, char* p3, char* p4);
 
 #ifdef __cplusplus
 }

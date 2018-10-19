@@ -7,41 +7,36 @@
 
 >Due to the encoding in C(.so) is ascii(1 character - 1 byte) and in python3 is unicode(1 character - 2 bytes), we use the utf-8(1 character - 1 byte in English, 1 character - 3 bytes in Chinese) encoding for compatibly
 
-- Push bytes to the rados object(write、writefull、append)
+- Push bytes to the rados object
 
 ```
 import ctypes
 
-if __name__ =="__main__":
-	rados = ctypes.CDLL('./rados.so')
-	WriteToObj = rados.WriteToObj # CDLL
-	WriteToObj.restype = ctypes.c_char_p # declare the expected type returned
-	WriteFullToObj = rados.WriteFullToObj # CDLL
-	WriteFullToObj.restype = ctypes.c_char_p # declare the expected type returned
-	AppendToObj = rados.AppendToObj # CDLL
-	AppendToObj.restype = ctypes.c_char_p # declare the expected type returned
+# Return type for ToObj. 
+class RetType(ctypes.Structure):
+    _fields_ = [('x', ctypes.c_bool),('y', ctypes.c_char_p)]
 
-	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
-	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
-	oid          = "oid".encode('utf-8') # object id. type:bytes
-	data         = "content".encode('utf-8') # data to be written. type:bytes
-	offset       = ctypes.c_ulonglong(0) # write strat from where. type:ctypes.c_ulonglong
+rados = ctypes.CDLL('./rados.so')
+ToObj = rados.ToObj # CDLL
+ToObj.restype = RetType # declare the expected type returned
+# parameters
+cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
+user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
+conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
+pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
+oid          = "oid".encode('utf-8') # object id. Type:bytes
+data         = "content".encode('utf-8') # data to be written. Type:bytes
+mode         = "w".encode('utf-8') # write mode ['w':write,'wf':write full,'wa':write append]
+offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in mode:'w'). Type:ctypes.c_ulonglong
 
-	# execute
+# mode'w': writes len(data) bytes to the object with object id starting at byte offset offset. It returns an error, if any.
+# mode'wf': writes len(data) bytes to the object with key oid. The object is filled with the provided data. If the object exists, it is atomically truncated and then written. It returns an error, if any.
+# mode'wa': appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
 
-	# WriteToObj: writes len(data) bytes to the object with object id starting at byte offset offset. It returns an error, if any.
-	result = WriteToObj(cluster_name, user_name, conf_file, pool_name, oid, data, offset) # return. type:bytes
-
-	# WriteFullToObj: writes len(data) bytes to the object with key oid. The object is filled with the provided data. If the object exists, it is atomically truncated and then written. It returns an error, if any.
-	result = WriteFullToObj(cluster_name, user_name, conf_file, pool_name, oid, data) # return. type:bytes
-
-	# AppendToObj: appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
-	result = AppendToObj(cluster_name, user_name, conf_file, pool_name, oid, data) # return. type:bytes
-
-	# print(result.decode()
+# execute
+result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, offset) # return. Type:RetType
+stat = result.x # Whether the write operation executed successfully. Type:bool
+info = result.y # The error or success description. Type:bytes
 ```
 
 - Get bytes from the rados object
@@ -49,23 +44,27 @@ if __name__ =="__main__":
 ```
 import ctypes
 
-if __name__ =="__main__":
-	rados = ctypes.CDLL('./rados.so')
-	FromObj = rados.FromObj # CDLL
-	FromObj.restype = ctypes.c_char_p # declare the expected type returned
+# Return type for ToObj. 
+class RetType(ctypes.Structure):
+    _fields_ = [('x', ctypes.c_bool),('y', ctypes.c_char_p)]
 
-	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
-	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
-	block_size   = 204800000 # Maximum number of bytes read each time. type:int
-	oid          = "oid".encode('utf-8') # object id. type:bytes
-	offset       = ctypes.c_ulonglong(0) # where read strat from. type:ctypes.c_ulonglong
+rados = ctypes.CDLL('./rados.so')
+FromObj = rados.FromObj # CDLL
+FromObj.restype = RetType # declare the expected type returned
 
-	# execute
-	bytesOut = FromObj(cluster_name, user_name, conf_file, pool_name, block_size, oid, offset) # return. type:bytes
-	# print(bytesOut.decode()
+# parameters
+cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
+user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
+conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
+pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
+block_size   = 204800000 # Maximum number of bytes read each time. Type:int
+oid          = "oid".encode('utf-8') # object id. Type:bytes
+offset       = ctypes.c_ulonglong(0) # where read strat from. Type:ctypes.c_ulonglong
+
+# execute
+result = FromObj(cluster_name, user_name, conf_file, pool_name, block_size, oid, offset) # return. Type:RetType
+stat = result.x # Whether the read operation executed successfully. Type:bool
+byteout = result.y # The bytes read out. Type:bytes
 ```
 
 - Delete an object in pool
@@ -73,21 +72,25 @@ if __name__ =="__main__":
 ```
 import ctypes
 
-if __name__ =="__main__":
-	rados = ctypes.CDLL('./rados.so')
-	DelObj = rados.DelObj # CDLL
-	DelObj.restype = ctypes.c_char_p # declare the expected type returned
+# Return type for ToObj. 
+class RetType(ctypes.Structure):
+    _fields_ = [('x', ctypes.c_bool),('y', ctypes.c_char_p)]
 
-	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
-	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
-	oid          = "oid".encode('utf-8') # object id. type:bytes
+rados = ctypes.CDLL('./rados.so')
+DelObj = rados.DelObj # CDLL
+DelObj.restype = RetType # declare the expected type returned
 
-	# execute
-	result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. type:bytes
-	# print(result.decode()
+# parameters
+cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
+user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
+conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
+pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
+oid          = "oid".encode('utf-8') # object id. Type:bytes
+
+# execute
+result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. Type:RetType
+stat = result.x # Whether the delete operation executed successfully. Type:bool
+info = result.y # The error or success description. Type:bytes
 ```
 
 - List the objects in pool
@@ -97,17 +100,17 @@ if __name__ =="__main__":
 import ctypes
 
 if __name__ =="__main__":
-	rados = ctypes.CDLL('./rados.so')
-	ListObj = rados.ListObj # CDLL
-	ListObj.restype = ctypes.c_char_p # declare the expected type returned
+rados = ctypes.CDLL('./rados.so')
+ListObj = rados.ListObj # CDLL
+ListObj.restype = ctypes.c_char_p # declare the expected type returned
 
-	# parameters
-	cluster_name = "ceph".encode('utf-8') # cluster name. type:bytes
-	user_name    = "client.objstore".encode('utf-8') # user name. type:bytes
-	conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. type:bytes
-	pool_name    = "objstore".encode('utf-8') # pool名称. type:bytes
+# parameters
+cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
+user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
+conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
+pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 
-	# execute
-	result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. type:bytes
-	# print(result.decode()
+# execute
+result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. Type:bytes
+# print(result.decode())
 ```
