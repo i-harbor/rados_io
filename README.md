@@ -34,7 +34,7 @@ offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in 
 # mode'wa': appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
 
 # execute
-result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, offset) # return. Type:RetType
+result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, mode, offset) # return. Type:RetType
 stat = result.x # Whether the write operation executed successfully. Type:bool
 info = result.y # The error or success description. Type:bytes
 ```
