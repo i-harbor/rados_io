@@ -2,9 +2,10 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-19 17:19:15
+* @Last Modified time: 2018-10-26 15:27:48
 */
 package main
+
 import "C"
 import (
     "fmt"
@@ -68,21 +69,24 @@ func ListObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c
 }
 
 //export FromObj
-func FromObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char,block_size int, c_oid *C.char, offset uint64) (C._Bool, *C.char){
+func FromObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char, block_size int, c_oid *C.char, offset uint64) (C._Bool, unsafe.Pointer, C.int){
     if block_size > 204800000 {
-        return false, C.CString("the block_size cannot be greater than 204800000")
+        result := "the block_size cannot be greater than 204800000"
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     cluster_name, user_name, conf_file, pool_name, oid := C.GoString(c_cluster_name), C.GoString(c_user_name), C.GoString(c_conf_file), C.GoString(c_pool_name), C.GoString(c_oid)
     conn, err := newConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, C.CString("error when invoke a new connection:" + err.Error())
+        result := "error when invoke a new connection:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, C.CString("error when openIOContext" + err.Error())
+        result := "error when openIOContext" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer ioctx.Destroy()
 
@@ -90,77 +94,88 @@ func FromObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c
 
     ret, bytesOut, err := ReadObjectToBytes(ioctx, oid, block_size, offset)
     if ret == -1 {
-        return false, C.CString("error when read the object to bytes:" + err.Error())
+        result := "error when read the object to bytes:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
-    
-    return true, C.CString(*(*string)(unsafe.Pointer(&bytesOut)))
-
+    return true, C.CBytes(bytesOut), C.int(len(bytesOut))
 }
 
 //export ToObj
-func ToObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char, c_oid *C.char, c_bytesIn *C.char, c_mode *C.char, offset uint64) (C._Bool, *C.char){
-    cluster_name, user_name, conf_file, pool_name, oid, bytesIn, mode := C.GoString(c_cluster_name), C.GoString(c_user_name), C.GoString(c_conf_file), C.GoString(c_pool_name), C.GoString(c_oid), C.GoString(c_bytesIn), C.GoString(c_mode)
+func ToObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char, c_oid *C.char, c_bytesIn *C.char, bytesLen C.int, c_mode *C.char, offset uint64) (C._Bool, unsafe.Pointer, C.int){
+    cluster_name, user_name, conf_file, pool_name, oid, mode := C.GoString(c_cluster_name), C.GoString(c_user_name), C.GoString(c_conf_file), C.GoString(c_pool_name), C.GoString(c_oid), C.GoString(c_mode)
+    bytesIn := C.GoBytes(unsafe.Pointer(c_bytesIn),bytesLen)
+
     conn, err := newConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, C.CString("error when invoke a new connection:" + err.Error())
+        result := "error when invoke a new connection:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, C.CString("error when openIOContext:" + err.Error())
+        result := "error when openIOContext:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer ioctx.Destroy()
 
     // write data to object
     switch mode {
         case "w":
-            err = ioctx.Write(oid, []byte(bytesIn), offset)
+            err = ioctx.Write(oid, bytesIn, offset)
             if err != nil {
-                return false, C.CString("error when write to object:" + err.Error())
+                result := "error when write to object:" + err.Error()
+                return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
             }
         case "wf":
-            err = ioctx.WriteFull(oid, []byte(bytesIn))
+            err = ioctx.WriteFull(oid, bytesIn)
             if err != nil {
-                return false, C.CString("error when write full to object:" + err.Error())
+                result := "error when write full to object:" + err.Error()
+                return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
             }
         case "wa":
-            err = ioctx.Append(oid, []byte(bytesIn))
+            err = ioctx.Append(oid, bytesIn)
             if err != nil {
-                return false, C.CString("error when append to object:" + err.Error())
+                result := "error when append to object:" + err.Error()
+                return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
             }
         default:
-            return false, C.CString("error when write to object: unknown wirte mode : " + mode + ", only ['w' : write; 'wf' :write full; 'wa':write append]")
+            result := "error when write to object: unknown wirte mode : " + mode + ", only ['w' : write; 'wf' :write full; 'wa':write append]"
+            return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
-
-    return true, C.CString("successfully writed(mode : " + mode + ") to object：" + oid)
+    result := "successfully writed(mode : " + mode + ") to object:" + oid
+    return true, unsafe.Pointer(C.CString(result)), C.int(len(result))
 }
 
 
 
 //export DelObj
-func DelObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char, c_oid *C.char) (C._Bool, *C.char){
+func DelObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_pool_name *C.char, c_oid *C.char) (C._Bool, unsafe.Pointer, C.int){
     cluster_name, user_name, conf_file, pool_name, oid := C.GoString(c_cluster_name), C.GoString(c_user_name), C.GoString(c_conf_file), C.GoString(c_pool_name), C.GoString(c_oid)
     conn, err := newConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, C.CString("error when invoke a new connection:" + err.Error())
+        result := "error when invoke a new connection:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, C.CString("error when openIOContext" + err.Error())
+        result := "error when openIOContext:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     defer ioctx.Destroy()
 
     // delete a object 
     err = ioctx.Delete(oid)
     if err != nil {
-        return false, C.CString("error when delete the object:" + err.Error())
+        result := "error when delete the object:" + err.Error()
+        return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
-    return true, C.CString("successfully delete the object:" + oid)
+    result := "successfully delete the object:" + oid
+    return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
 }
 func main() {
     
