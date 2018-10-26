@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-26 15:27:48
+* @Last Modified time: 2018-10-26 18:15:53
 */
 package main
 
@@ -175,7 +175,7 @@ func DelObj(c_cluster_name *C.char, c_user_name *C.char, c_conf_file *C.char, c_
         return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
     }
     result := "successfully delete the object:" + oid
-    return false, unsafe.Pointer(C.CString(result)), C.int(len(result))
+    return true, unsafe.Pointer(C.CString(result)), C.int(len(result))
 }
 func main() {
     
