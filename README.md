@@ -37,7 +37,7 @@ offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in 
 # execute
 result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, len, mode, offset) # return. Type:RetType
 stat = result.x # Whether the write operation executed successfully. Type:bool
-info = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
+data = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
 
 ```
 
@@ -92,18 +92,21 @@ oid          = "oid".encode('utf-8') # object id. Type:bytes
 # execute
 result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. Type:RetType
 stat = result.x # Whether the delete operation executed successfully. Type:bool
-info = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
+data = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
 ```
 
 - List the objects in pool
->Just printed in terminal because of the function [ListObjects](https://godoc.org/github.com/ceph/go-ceph/rados#IOContext.ListObjects) in [go-ceph](https://github.com/ceph/go-ceph)
 
 ```
 import ctypes
 
+# Return type for ListObj. 
+class RetType(ctypes.Structure):
+    _fields_ = [('x', ctypes.c_bool),('y', ctypes.c_void_p),('z', ctypes.c_int)]
+
 rados = ctypes.CDLL('./rados.so')
 ListObj = rados.ListObj # CDLL
-ListObj.restype = ctypes.c_char_p # declare the expected type returned
+ListObj.restype = RetType # declare the expected type returned
 
 # parameters
 cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
@@ -112,6 +115,9 @@ conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:by
 pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 
 # execute
-result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. Type:bytes
-# print(result.decode())
+result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. Type:RetType
+stat = result.x # Whether the delete operation executed successfully. Type:bool
+data = ctypes.string_at(result.y,result.z) # The error or object list bytes(y:the address of the characters; z:the offset of the characters). Type:bytes
+objects_list = data.decode().split(',') # The type:list of the objects list
+# print(objects_list)
 ```
