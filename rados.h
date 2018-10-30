@@ -53,7 +53,14 @@ extern "C" {
 #endif
 
 
-extern char* ListObj(char* p0, char* p1, char* p2, char* p3);
+/* Return type for ListObj */
+struct ListObj_return {
+	_Bool r0;
+	void* r1;
+	int r2;
+};
+
+extern struct ListObj_return ListObj(char* p0, char* p1, char* p2, char* p3);
 
 /* Return type for FromObj */
 struct FromObj_return {
@@ -71,7 +78,7 @@ struct ToObj_return {
 	int r2;
 };
 
-extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, int p6, char* p7, GoUint64 p8);
+extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, void* p5, GoInt p6, char* p7, GoUint64 p8);
 
 /* Return type for DelObj */
 struct DelObj_return {
