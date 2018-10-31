@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-30 20:34:35
+* @Last Modified time: 2018-10-31 16:04:42
 */
 package rados_io_op
 
@@ -11,30 +11,79 @@ import (
     "github.com/ceph/go-ceph/rados"
 )
 
-func writeToObj(ioctx *rados.IOContext, oid string, bytesIn []byte, offset uint64) error {
+func writeToObj(ioctx *rados.IOContext, oid string, bytesIn []byte, offset uint64) (error, string) {
     var err error = nil
     oid_suffix := offset / MAX_RADOS_BYTES
     offset %= MAX_RADOS_BYTES
     oid_suffix_gap := (offset + uint64(len(bytesIn))) / MAX_RADOS_BYTES
+
+    // get the oids lists writed
+    var oid_suffix_list string
+    switch {
+        case oid_suffix == 0 && oid_suffix_gap > 0:
+            oid_suffix_list = "(" + oid + " to " + oid + "__" + strconv.FormatUint(oid_suffix_gap, 10) + ")"
+        case oid_suffix > 0 && oid_suffix_gap == 0:
+            oid_suffix_list = "(" + oid + "__" + strconv.FormatUint(oid_suffix, 10)
+        case oid_suffix > 0 && oid_suffix_gap >0:
+            oid_suffix_list = "(" + oid + "__" + strconv.FormatUint(oid_suffix, 10) + " to " + oid + "__" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10) + ")"
+        default:
+            oid_suffix_list = ""
+    }
+
+    // write to the rados cyclically
     for oid_suffix_gap > 0 {
         bytesIn_tmp := bytesIn[(oid_suffix_gap * MAX_RADOS_BYTES - offset):]
-        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix + oid_suffix_gap,10), bytesIn_tmp, 0)
+        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10), bytesIn_tmp, 0)
         if err != nil {
-            return err
+            return err, ""
         }
         bytesIn = bytesIn[:(oid_suffix_gap * MAX_RADOS_BYTES - offset)]
-        oid_suffix_gap -= 1
+        oid_suffix_gap --
     }
     if oid_suffix > 0 {
-        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix,10), bytesIn, offset)
+        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix, 10), bytesIn, offset)
     } else {
         err = ioctx.Write(oid, bytesIn, offset)
     }
     
     if err != nil {
-        return err
+        return err, oid_suffix_list
     }
-    return nil
+
+    return nil, oid_suffix_list
+}
+
+func writeFulToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error, string) {
+    var err error = nil
+    // delete the rados fully
+    deleteObj(ioctx, oid)
+
+    oid_suffix := uint64(len(bytesIn)) / MAX_RADOS_BYTES
+
+    // get the oids lists writed
+    var oid_suffix_list string
+    if oid_suffix > 0 {
+        oid_suffix_list = "(" + oid + " to " + oid + "__" + strconv.FormatUint(oid_suffix, 10) + ")"
+    } else {
+        oid_suffix_list = ""
+    }
+
+    // write to the rados cyclically
+    for oid_suffix > 0 {
+        bytesIn_tmp := bytesIn[(oid_suffix * MAX_RADOS_BYTES):]
+        err = ioctx.WriteFull(oid + "__" + strconv.FormatUint(oid_suffix, 10), bytesIn_tmp)
+        if err != nil {
+            return err, ""
+        }
+        bytesIn = bytesIn[:(oid_suffix * MAX_RADOS_BYTES)]
+        oid_suffix--
+    }
+
+    err = ioctx.WriteFull(oid, bytesIn)
+    if err != nil {
+        return err, ""
+    }
+    return nil, oid_suffix_list
 }
 
 func RadosToObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string, bytesIn []byte, bytesLen int, mode string, offset uint64) (bool, []byte) {
@@ -52,14 +101,17 @@ func RadosToObj(cluster_name string, user_name string, conf_file string, pool_na
     defer ioctx.Destroy()
 
     // write data to object
+    var oid_suffix_list string = ""
     switch mode {
         case "w":
-            err = ioctx.Write(oid, bytesIn, offset)
+            // err = ioctx.Write(oid, bytesIn, offset)
+            err, oid_suffix_list = writeToObj(ioctx, oid, bytesIn, offset)
             if err != nil {
                 return false, []byte("error when write to object:" + err.Error())
             }
         case "wf":
-            err = ioctx.WriteFull(oid, bytesIn)
+            // err = ioctx.WriteFull(oid, bytesIn)
+            err, oid_suffix_list = writeFulToObj(ioctx, oid, bytesIn)
             if err != nil {
                 return false, []byte("error when write full to object:" + err.Error())
             }
@@ -71,5 +123,5 @@ func RadosToObj(cluster_name string, user_name string, conf_file string, pool_na
         default:
             return false, []byte("error when write to object: unknown wirte mode : " + mode + ", only ['w' : write; 'wf' :write full; 'wa':write append]")
     }
-    return true, []byte("successfully writed(mode : " + mode + ") to object:" + oid)
+    return true, []byte("successfully writed(mode : " + mode + ") to object:" + oid + oid_suffix_list)
 }

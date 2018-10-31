@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-30 22:02:39
+* @Last Modified time: 2018-10-31 16:21:39
 */
 package main
 
@@ -29,10 +29,6 @@ func ListObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
 
 //export FromObj
 func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, block_size int, oid *C.char, offset uint64) (C._Bool, unsafe.Pointer, C.int) {
-    if block_size > int(MAX_RADOS_BYTES) {
-        result := []byte("the block_size cannot be greater than MAX_RADOS_BYTES:" + strconv.FormatUint(offset / MAX_RADOS_BYTES,10))
-        return false, C.CBytes(result), C.int(len(result))
-    }
     if block_size > MAX_BLOCK_SIZE {
         result := []byte("the block_size cannot be greater than MAX_BLOCK_SIZE:" + strconv.Itoa(MAX_BLOCK_SIZE))
         return false, C.CBytes(result), C.int(len(result))
