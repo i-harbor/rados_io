@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-11-05 11:06:34
+* @Last Modified time: 2018-11-05 11:23:56
 */
 package main
 
@@ -14,7 +14,6 @@ import (
 )
 
 const MAX_RADOS_BYTES uint64 = rados_io_op.MAX_RADOS_BYTES
-const MAX_BLOCK_SIZE int = rados_io_op.MAX_BLOCK_SIZE
 
 //export ListObj
 func ListObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char) (C._Bool, unsafe.Pointer, C.int) {
@@ -29,11 +28,6 @@ func ListObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
 
 //export FromObj
 func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, block_size C.int, oid *C.char, offset C.ulonglong) (C._Bool, unsafe.Pointer, C.int) {
-    if int(block_size) > MAX_BLOCK_SIZE {
-        result := []byte("the block_size cannot be greater than MAX_BLOCK_SIZE:" + strconv.Itoa(MAX_BLOCK_SIZE))
-        return false, C.CBytes(result), C.int(len(result))
-    }
-
     stat, data := rados_io_op.RadosFromObj(
         C.GoString(cluster_name),
         C.GoString(user_name),
@@ -49,10 +43,6 @@ func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
 
 //export ToObj
 func ToObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, oid *C.char, bytesAddr unsafe.Pointer, bytesLen C.int, mode *C.char, offset C.ulonglong) (C._Bool, unsafe.Pointer, C.int) {
-    // if bytesLen > 2147483647 {
-    //     result := []byte("the length of data cannot be greater than the positive range of C.int : 2147483647")
-    //     return false, C.CBytes(result), C.int(len(result))
-    // }
     bytesIn := C.GoBytes(bytesAddr,bytesLen)
 
     stat, data := rados_io_op.RadosToObj(

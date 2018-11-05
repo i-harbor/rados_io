@@ -26,7 +26,7 @@ conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:by
 pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 oid          = "oid".encode('utf-8') # object id. Type:bytes
 data         = "content".encode('utf-8') # data to be written. Type:bytes
-len          = len(data) # length of data to be written. Type:int
+len          = ctypes.c_int(len(data)) # length of data to be written. Type:ctypes.c_int
 mode         = "w".encode('utf-8') # write mode ['w':write,'wf':write full,'wa':write append]
 offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in mode:'w'). Type:ctypes.c_ulonglong
 
@@ -59,7 +59,7 @@ cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
 user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
 conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
 pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
-block_size   = 204800000 # Maximum number of bytes read each time. Type:int
+block_size   = ctypes.c_int(204800000) # Maximum number of bytes read each time. Type:ctypes.c_int
 oid          = "oid".encode('utf-8') # object id. Type:bytes
 offset       = ctypes.c_ulonglong(0) # where read strat from. Type:ctypes.c_ulonglong
 
