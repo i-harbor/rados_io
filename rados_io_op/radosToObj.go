@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-31 18:04:54
+* @Last Modified time: 2018-11-05 10:47:06
 */
 package rados_io_op
 
@@ -102,7 +102,7 @@ func writeAppendToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error
     return err, oid_suffix_list
 }
 
-func RadosToObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string, bytesIn []byte, bytesLen int, mode string, offset uint64) (bool, []byte) {
+func RadosToObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string, bytesIn []byte, mode string, offset uint64) (bool, []byte) {
     conn, err := NewConn(cluster_name, user_name, conf_file)
     if err != nil {
         return false, []byte("error when invoke a new connection:" + err.Error())
