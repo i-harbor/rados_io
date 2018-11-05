@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-11-05 10:57:38
+* @Last Modified time: 2018-11-05 11:06:34
 */
 package main
 
@@ -28,7 +28,7 @@ func ListObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
 }
 
 //export FromObj
-func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, block_size C.int, oid *C.char, offset uint64) (C._Bool, unsafe.Pointer, C.int) {
+func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, block_size C.int, oid *C.char, offset C.ulonglong) (C._Bool, unsafe.Pointer, C.int) {
     if int(block_size) > MAX_BLOCK_SIZE {
         result := []byte("the block_size cannot be greater than MAX_BLOCK_SIZE:" + strconv.Itoa(MAX_BLOCK_SIZE))
         return false, C.CBytes(result), C.int(len(result))
@@ -41,14 +41,14 @@ func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
         C.GoString(pool_name),
         int(block_size),
         C.GoString(oid),
-        offset)
+        uint64(offset))
 
     return C._Bool(stat), C.CBytes(data), C.int(len(data))
 }
 
 
 //export ToObj
-func ToObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, oid *C.char, bytesAddr unsafe.Pointer, bytesLen C.int, mode *C.char, offset uint64) (C._Bool, unsafe.Pointer, C.int) {
+func ToObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, oid *C.char, bytesAddr unsafe.Pointer, bytesLen C.int, mode *C.char, offset C.ulonglong) (C._Bool, unsafe.Pointer, C.int) {
     // if bytesLen > 2147483647 {
     //     result := []byte("the length of data cannot be greater than the positive range of C.int : 2147483647")
     //     return false, C.CBytes(result), C.int(len(result))
@@ -63,7 +63,7 @@ func ToObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name
         C.GoString(oid),
         bytesIn,
         C.GoString(mode),
-        offset)
+        uint64(offset))
 
     return C._Bool(stat), C.CBytes(data), C.int(len(data))
 }

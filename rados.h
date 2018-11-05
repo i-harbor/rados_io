@@ -69,7 +69,7 @@ struct FromObj_return {
 	int r2;
 };
 
-extern struct FromObj_return FromObj(char* p0, char* p1, char* p2, char* p3, int p4, char* p5, GoUint64 p6);
+extern struct FromObj_return FromObj(char* p0, char* p1, char* p2, char* p3, int p4, char* p5, long long unsigned int p6);
 
 /* Return type for ToObj */
 struct ToObj_return {
@@ -78,7 +78,7 @@ struct ToObj_return {
 	int r2;
 };
 
-extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, void* p5, int p6, char* p7, GoUint64 p8);
+extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, void* p5, int p6, char* p7, long long unsigned int p8);
 
 /* Return type for DelObj */
 struct DelObj_return {
