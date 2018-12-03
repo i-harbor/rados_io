@@ -27,7 +27,7 @@ pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 oid          = "oid".encode('utf-8') # object id. Type:bytes
 data         = "content".encode('utf-8') # data to be written. Type:bytes
 len          = ctypes.c_int(len(data)) # length of data to be written. Type:ctypes.c_int
-mode         = "w".encode('utf-8') # write mode ['w':write,'wf':write full,'wa':write append]
+mode         = "w".encode('utf-8') # write mode ['w':write,'wf':write full,'wa':write append]. Type:bytes
 offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in mode:'w'). Type:ctypes.c_ulonglong
 
 # mode'w': writes len(data) bytes to the object with object id starting at byte offset offset. It returns an error, if any.

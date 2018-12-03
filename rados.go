@@ -2,14 +2,13 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-11-05 11:23:56
+* @Last Modified time: 2018-11-06 10:22:20
 */
 package main
 
 import "C"
 import (
     "unsafe"
-    "strconv"
     "rados_io/rados_io_op"
 )
 
@@ -43,15 +42,13 @@ func FromObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_na
 
 //export ToObj
 func ToObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, oid *C.char, bytesAddr unsafe.Pointer, bytesLen C.int, mode *C.char, offset C.ulonglong) (C._Bool, unsafe.Pointer, C.int) {
-    bytesIn := C.GoBytes(bytesAddr,bytesLen)
-
     stat, data := rados_io_op.RadosToObj(
         C.GoString(cluster_name),
         C.GoString(user_name),
         C.GoString(conf_file),
         C.GoString(pool_name),
         C.GoString(oid),
-        bytesIn,
+        C.GoBytes(bytesAddr,bytesLen),
         C.GoString(mode),
         uint64(offset))
 
