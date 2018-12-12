@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-11-05 10:47:06
+* @Last Modified time: 2018-12-12 10:38:02
 */
 package rados_io_op
 
@@ -105,14 +105,14 @@ func writeAppendToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error
 func RadosToObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string, bytesIn []byte, mode string, offset uint64) (bool, []byte) {
     conn, err := NewConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, []byte("error when invoke a new connection:" + err.Error())
+        return false, []byte(err.Error() + ",error when invoke a new connection:" + ERR_INFO[err.Error()])
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, []byte("error when invoke a new connection:" + err.Error())
+        return false, []byte(err.Error() + ",error when openIOContext:" + ERR_INFO[err.Error()])
     }
     defer ioctx.Destroy()
 
@@ -122,20 +122,20 @@ func RadosToObj(cluster_name string, user_name string, conf_file string, pool_na
         case "w":
             err, oid_suffix_list = writeToObj(ioctx, oid, bytesIn, offset)
             if err != nil {
-                return false, []byte("error when write to object:" + err.Error())
+                return false, []byte(err.Error() + ",error when write to object:" + ERR_INFO[err.Error()])
             }
         case "wf":
             err, oid_suffix_list = writeFulToObj(ioctx, oid, bytesIn)
             if err != nil {
-                return false, []byte("error when write full to object:" + err.Error())
+                return false, []byte(err.Error() + ",error when write full to object:" + ERR_INFO[err.Error()])
             }
         case "wa":
             err, oid_suffix_list = writeAppendToObj(ioctx, oid, bytesIn)
             if err != nil {
-                return false, []byte("error when append to object:" + err.Error())
+                return false, []byte(err.Error() + ",error when write append to object:" + ERR_INFO[err.Error()])
             }
         default:
-            return false, []byte("error when write to object: unknown wirte mode : " + mode + ", only ['w' : write; 'wf' :write full; 'wa':write append]")
+            return false, []byte(err.Error() + ",error when write to object: unknown wirte mode : " + mode + ", only ['w' : write; 'wf' :write full; 'wa':write append]:" + ERR_INFO[err.Error()])
     }
     return true, []byte("successfully writed(mode : " + mode + ") to object:" + oid + oid_suffix_list)
 }

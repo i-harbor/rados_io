@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-31 17:53:23
+* @Last Modified time: 2018-12-12 14:45:59
 */
 package rados_io_op
 
@@ -55,20 +55,20 @@ func readObjToBytes(ioctx *rados.IOContext, oid string, block_size int, offset u
 func RadosFromObj(cluster_name string, user_name string, conf_file string, pool_name string, block_size int, oid string, offset uint64) (bool, []byte) {
     conn, err := NewConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, []byte("error when invoke a new connection:" + err.Error())
+        return false, []byte(err.Error() + ",error when invoke a new connection:" + ERR_INFO[err.Error()])
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, []byte("error when openIOContext" + err.Error())
+        return false, []byte(err.Error() + ",error when openIOContext:" + ERR_INFO[err.Error()])
     }
     defer ioctx.Destroy()
 
     bytesOut, err := readObjToBytes(ioctx, oid, block_size, offset)
     if err != nil {
-        return false, []byte("error when read the object(oid:" + oid + ") to bytes:" + err.Error())
+        return false, []byte(err.Error() + ",error when read the object(oid:" + oid + ") to bytes:" + ERR_INFO[err.Error()])
     }
     return true, bytesOut
 }

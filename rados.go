@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-10 09:54:12
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-11-06 10:22:20
+* @Last Modified time: 2018-12-12 14:46:45
 */
 package main
 
@@ -13,6 +13,18 @@ import (
 )
 
 const MAX_RADOS_BYTES uint64 = rados_io_op.MAX_RADOS_BYTES
+
+//export ExistObj
+func ExistObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char, oid *C.char) (C._Bool, unsafe.Pointer, C.int) {
+    stat, data := rados_io_op.RadosExistObj(
+        C.GoString(cluster_name), 
+        C.GoString(user_name), 
+        C.GoString(conf_file), 
+        C.GoString(pool_name), 
+        C.GoString(oid))
+
+    return C._Bool(stat), C.CBytes(data), C.int(len(data))
+}
 
 //export ListObj
 func ListObj(cluster_name *C.char, user_name *C.char, conf_file *C.char, pool_name *C.char) (C._Bool, unsafe.Pointer, C.int) {

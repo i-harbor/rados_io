@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-10-31 10:26:05
+* @Last Modified time: 2018-12-12 14:46:06
 */
 package rados_io_op
 
@@ -35,21 +35,21 @@ func deleteObj(ioctx *rados.IOContext, oid string) (error, string) {
 func RadosDelObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string) (bool, []byte) {
     conn, err := NewConn(cluster_name, user_name, conf_file)
     if err != nil {
-        return false, []byte("error when invoke a new connection:" + err.Error())
+        return false, []byte(err.Error() + ",error when invoke a new connection:" + ERR_INFO[err.Error()])
     }
     defer conn.Shutdown()
 
     // open a pool handle
     ioctx, err := conn.OpenIOContext(pool_name)
     if err != nil {
-        return false, []byte("error when openIOContext:" + err.Error())
+        return false, []byte(err.Error() + ",error when openIOContext:" + ERR_INFO[err.Error()])
     }
     defer ioctx.Destroy()
 
     // delete a object 
     err, oid_suffix_list := deleteObj(ioctx, oid)
     if err != nil {
-        return false, []byte("error when delete the object:" + err.Error())
+        return false, []byte(err.Error() + ",error when delete the object:" + ERR_INFO[err.Error()])
     }
 
     return true, []byte("successfully delete the object:" + oid + oid_suffix_list)

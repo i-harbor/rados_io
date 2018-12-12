@@ -37,7 +37,7 @@ offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in 
 # execute
 result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, len, mode, offset) # return. Type:RetType
 stat = result.x # Whether the write operation executed successfully. Type:bool
-data = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
+data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or success description. Type:bytes
 
 ```
 
@@ -66,7 +66,7 @@ offset       = ctypes.c_ulonglong(0) # where read strat from. Type:ctypes.c_ulon
 # execute
 result = FromObj(cluster_name, user_name, conf_file, pool_name, block_size, oid, offset) # return. Type:RetType
 stat = result.x # Whether the read operation executed successfully. Type:bool
-byteout = ctypes.string_at(result.y,result.z) # The bytes read out(y:the address of the characters; z:the offset of the characters). Type:bytes
+data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or the bytes read out. Type:bytes
 ```
 
 - Delete an object in pool
@@ -92,7 +92,7 @@ oid          = "oid".encode('utf-8') # object id. Type:bytes
 # execute
 result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. Type:RetType
 stat = result.x # Whether the delete operation executed successfully. Type:bool
-data = ctypes.string_at(result.y,result.z) # The error or success description(y:the address of the characters; z:the offset of the characters). Type:bytes
+data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or success description. Type:bytes
 ```
 
 - List the objects in pool
@@ -116,8 +116,33 @@ pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 
 # execute
 result = ListObj(cluster_name, user_name, conf_file, pool_name) # return. Type:RetType
-stat = result.x # Whether the delete operation executed successfully. Type:bool
-data = ctypes.string_at(result.y,result.z) # The error or object list bytes(y:the address of the characters; z:the offset of the characters). Type:bytes
-objects_list = data.decode().split(',') # The type:list of the objects list
+stat = result.x # Whether the list operation executed successfully. Type:bool
+data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or object list bytes. Type:bytes
+objects_list = data.decode().split(',') # The list of the objects list. Type:list
 # print(objects_list)
 ```
+
+- Whether an object is existed in pool
+
+```
+import ctypes
+
+# Return type for ToObj. 
+class RetType(ctypes.Structure):
+    _fields_ = [('x', ctypes.c_bool),('y', ctypes.c_void_p),('z', ctypes.c_int)]
+
+rados = ctypes.CDLL('./rados.so')
+ExistObj = rados.ExistObj # CDLL
+ExistObj.restype = RetType # declare the expected type returned
+
+# parameters
+cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
+user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
+conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
+pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
+oid          = "oid".encode('utf-8') # object id. Type:bytes
+
+# execute
+result = ExistObj(cluster_name, user_name, conf_file, pool_name, oid) # return. Type:RetType
+stat = result.x # Whether the object is existed in pool. Type:bool
+data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or success description. Type:bytes

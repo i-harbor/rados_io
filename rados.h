@@ -53,6 +53,15 @@ extern "C" {
 #endif
 
 
+/* Return type for ExistObj */
+struct ExistObj_return {
+	_Bool r0;
+	void* r1;
+	int r2;
+};
+
+extern struct ExistObj_return ExistObj(char* p0, char* p1, char* p2, char* p3, char* p4);
+
 /* Return type for ListObj */
 struct ListObj_return {
 	_Bool r0;
