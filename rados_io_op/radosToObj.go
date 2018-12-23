@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-12-12 10:38:02
+* @Last Modified time: 2018-12-23 17:17:12
 */
 package rados_io_op
 
@@ -21,11 +21,11 @@ func writeToObj(ioctx *rados.IOContext, oid string, bytesIn []byte, offset uint6
     var oid_suffix_list string
     switch {
         case oid_suffix == 0 && oid_suffix_gap > 0:
-            oid_suffix_list = "(" + oid + " to " + oid + "__" + strconv.FormatUint(oid_suffix_gap, 10) + ")"
+            oid_suffix_list = "(" + oid + " to " + oid + "_" + strconv.FormatUint(oid_suffix_gap, 10) + ")"
         case oid_suffix > 0 && oid_suffix_gap == 0:
-            oid_suffix_list = "(" + oid + "__" + strconv.FormatUint(oid_suffix, 10)
+            oid_suffix_list = "(" + oid + "_" + strconv.FormatUint(oid_suffix, 10)
         case oid_suffix > 0 && oid_suffix_gap >0:
-            oid_suffix_list = "(" + oid + "__" + strconv.FormatUint(oid_suffix, 10) + " to " + oid + "__" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10) + ")"
+            oid_suffix_list = "(" + oid + "_" + strconv.FormatUint(oid_suffix, 10) + " to " + oid + "_" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10) + ")"
         default:
             oid_suffix_list = ""
     }
@@ -33,7 +33,7 @@ func writeToObj(ioctx *rados.IOContext, oid string, bytesIn []byte, offset uint6
     // write to the rados cyclically if the data size greater MAX_RADOS_BYTES
     for oid_suffix_gap > 0 {
         bytesIn_tmp := bytesIn[(oid_suffix_gap * MAX_RADOS_BYTES - offset):]
-        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10), bytesIn_tmp, 0)
+        err = ioctx.Write(oid + "_" + strconv.FormatUint(oid_suffix + oid_suffix_gap, 10), bytesIn_tmp, 0)
         if err != nil {
             return err, ""
         }
@@ -41,7 +41,7 @@ func writeToObj(ioctx *rados.IOContext, oid string, bytesIn []byte, offset uint6
         oid_suffix_gap --
     }
     if oid_suffix > 0 {
-        err = ioctx.Write(oid + "__" + strconv.FormatUint(oid_suffix, 10), bytesIn, offset)
+        err = ioctx.Write(oid + "_" + strconv.FormatUint(oid_suffix, 10), bytesIn, offset)
     } else {
         err = ioctx.Write(oid, bytesIn, offset)
     }
@@ -62,7 +62,7 @@ func writeFulToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error, s
     // get the oids lists writed
     var oid_suffix_list string
     if oid_suffix > 0 {
-        oid_suffix_list = "(" + oid + " to " + oid + "__" + strconv.FormatUint(oid_suffix, 10) + ")"
+        oid_suffix_list = "(" + oid + " to " + oid + "_" + strconv.FormatUint(oid_suffix, 10) + ")"
     } else {
         oid_suffix_list = ""
     }
@@ -70,7 +70,7 @@ func writeFulToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error, s
     // write to the rados cyclically if the data size greater MAX_RADOS_BYTES
     for oid_suffix > 0 {
         bytesIn_tmp := bytesIn[(oid_suffix * MAX_RADOS_BYTES):]
-        err := ioctx.WriteFull(oid + "__" + strconv.FormatUint(oid_suffix, 10), bytesIn_tmp)
+        err := ioctx.WriteFull(oid + "_" + strconv.FormatUint(oid_suffix, 10), bytesIn_tmp)
         if err != nil {
             return err, ""
         }
@@ -93,7 +93,7 @@ func writeAppendToObj(ioctx *rados.IOContext, oid string, bytesIn []byte) (error
     i := 0
     for len(data) == int(MAX_RADOS_BYTES) {
         i++
-        data, _ = readObjToBytes(ioctx, oid + "__" + strconv.Itoa(i), int(MAX_RADOS_BYTES), 0)
+        data, _ = readObjToBytes(ioctx, oid + "_" + strconv.Itoa(i), int(MAX_RADOS_BYTES), 0)
         offset += len(data)
     }
 

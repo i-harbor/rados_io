@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-12-12 14:46:06
+* @Last Modified time: 2018-12-23 17:16:52
 */
 package rados_io_op
 
@@ -18,7 +18,7 @@ func deleteObj(ioctx *rados.IOContext, oid string) (error, string) {
     var flag [MAX_RADOS_SUFFIX]bool
     var oid_suffix_list string = ""
     for i, _ := range flag {
-        oid_tmp := oid + "__" + strconv.Itoa(i)
+        oid_tmp := oid + "_" + strconv.Itoa(i)
         err = ioctx.Delete(oid_tmp)
         if err != nil {
             flag[i] = true

@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-12-12 14:45:59
+* @Last Modified time: 2018-12-23 17:17:04
 */
 package rados_io_op
 
@@ -17,7 +17,7 @@ func readObjToBytes(ioctx *rados.IOContext, oid string, block_size int, offset u
     oid_suffix := offset / MAX_RADOS_BYTES
     oid_tmp := oid
     if oid_suffix > 0 {
-        oid += "__" + strconv.FormatUint(oid_suffix,10)
+        oid += "_" + strconv.FormatUint(oid_suffix,10)
     }
     offset %= MAX_RADOS_BYTES
     
@@ -31,7 +31,7 @@ func readObjToBytes(ioctx *rados.IOContext, oid string, block_size int, offset u
     // read the bytes cyclically if the data size user want greater than MAX_RADOS_BYTES
     if(block_size_tmp > 0){
         bytesOut_tmp := make([]byte, block_size_tmp)
-        ret_tmp, err_tmp := ioctx.Read(oid_tmp + "__" + strconv.FormatUint(oid_suffix+1,10), bytesOut_tmp, 0)
+        ret_tmp, err_tmp := ioctx.Read(oid_tmp + "_" + strconv.FormatUint(oid_suffix+1,10), bytesOut_tmp, 0)
         for err_tmp == nil && len(bytesOut) < block_size {
             bytesOut_tmp = bytesOut_tmp[:ret_tmp]
             var buffer bytes.Buffer
@@ -46,7 +46,7 @@ func readObjToBytes(ioctx *rados.IOContext, oid string, block_size int, offset u
             }
 
             bytesOut_tmp = make([]byte, block_size_tmp)
-            ret_tmp, err_tmp = ioctx.Read(oid_tmp + "__" + strconv.FormatUint(oid_suffix+1,10), bytesOut_tmp, 0)
+            ret_tmp, err_tmp = ioctx.Read(oid_tmp + "_" + strconv.FormatUint(oid_suffix+1,10), bytesOut_tmp, 0)
         }
     }
     return bytesOut, err
