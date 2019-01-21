@@ -2,7 +2,7 @@
 * @Author: Ins
 * @Date:   2018-10-30 16:21:00
 * @Last Modified by:   Ins
-* @Last Modified time: 2018-12-23 17:16:52
+* @Last Modified time: 2019-01-21 15:34:41
 */
 package rados_io_op
 
@@ -10,29 +10,27 @@ import (
     "strconv"
     "github.com/ceph/go-ceph/rados"
 )
-func deleteObj(ioctx *rados.IOContext, oid string) (error, string) {
+func deleteObj(ioctx *rados.IOContext, oid string, osize uint64) (error, string) {
+    var oid_suffix_list string = "("
     err := ioctx.Delete(oid)
-    if err != nil {
-        return err, ""
+    if err == nil {
+        oid_suffix_list += oid
     }
-    var flag [MAX_RADOS_SUFFIX]bool
-    var oid_suffix_list string = ""
-    for i, _ := range flag {
-        oid_tmp := oid + "_" + strconv.Itoa(i)
-        err = ioctx.Delete(oid_tmp)
-        if err != nil {
-            flag[i] = true
-        } else {
-            oid_suffix_list += "," + oid_tmp
-        }
-        if flag[i] && i >= 5 && flag[i-5] && flag[i-4] && flag[i-3] && flag[i-2] && flag[i-1] {
-            break
+    oid_suffix := osize / MAX_RADOS_BYTES
+    for i := uint64(0); i <= oid_suffix; i++ {
+        oid_tmp := oid + "_" + strconv.FormatUint(i, 10)
+        err_tmp := ioctx.Delete(oid_tmp)
+        if err_tmp == nil {
+            err = nil
+            oid_suffix_list += " " + oid_tmp
         }
     }
-    return nil, oid_suffix_list
+    oid_suffix_list += ")"
+ 
+    return err, oid_suffix_list
 }
 
-func RadosDelObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string) (bool, []byte) {
+func RadosDelObj(cluster_name string, user_name string, conf_file string, pool_name string, oid string, osize uint64) (bool, []byte) {
     conn, err := NewConn(cluster_name, user_name, conf_file)
     if err != nil {
         return false, []byte(err.Error() + ",error when invoke a new connection:" + ERR_INFO[err.Error()])
@@ -46,8 +44,9 @@ func RadosDelObj(cluster_name string, user_name string, conf_file string, pool_n
     }
     defer ioctx.Destroy()
 
-    // delete a object 
-    err, oid_suffix_list := deleteObj(ioctx, oid)
+    // delete a object
+    err, oid_suffix_list := deleteObj(ioctx, oid, osize)
+
     if err != nil {
         return false, []byte(err.Error() + ",error when delete the object:" + ERR_INFO[err.Error()])
     }

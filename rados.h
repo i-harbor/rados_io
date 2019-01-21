@@ -87,7 +87,7 @@ struct ToObj_return {
 	int r2;
 };
 
-extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, void* p5, int p6, char* p7, long long unsigned int p8);
+extern struct ToObj_return ToObj(char* p0, char* p1, char* p2, char* p3, char* p4, void* p5, int p6, long long unsigned int p7);
 
 /* Return type for DelObj */
 struct DelObj_return {
@@ -96,7 +96,7 @@ struct DelObj_return {
 	int r2;
 };
 
-extern struct DelObj_return DelObj(char* p0, char* p1, char* p2, char* p3, char* p4);
+extern struct DelObj_return DelObj(char* p0, char* p1, char* p2, char* p3, char* p4, long long unsigned int p5);
 
 #ifdef __cplusplus
 }

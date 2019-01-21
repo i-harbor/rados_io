@@ -27,15 +27,10 @@ pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 oid          = "oid".encode('utf-8') # object id. Type:bytes
 data         = "content".encode('utf-8') # data to be written. Type:bytes
 len          = ctypes.c_int(len(data)) # length of data to be written. Type:ctypes.c_int
-mode         = "w".encode('utf-8') # write mode ['w':write,'wf':write full,'wa':write append]. Type:bytes
-offset       = ctypes.c_ulonglong(0) # write strat from where(only effective in mode:'w'). Type:ctypes.c_ulonglong
-
-# mode'w': writes len(data) bytes to the object with object id starting at byte offset offset. It returns an error, if any.
-# mode'wf': writes len(data) bytes to the object with key oid. The object is filled with the provided data. If the object exists, it is atomically truncated and then written. It returns an error, if any.
-# mode'wa': appends len(data) bytes to the object with key oid. The object is appended with the provided data. If the object exists, it is atomically appended to. It returns an error, if any.
+offset       = ctypes.c_ulonglong(0) # write strat from where. Type:ctypes.c_ulonglong
 
 # execute
-result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, len, mode, offset) # return. Type:RetType
+result = ToObj(cluster_name, user_name, conf_file, pool_name, oid, data, len, offset) # return. Type:RetType
 stat = result.x # Whether the write operation executed successfully. Type:bool
 data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or success description. Type:bytes
 
@@ -59,7 +54,7 @@ cluster_name = "ceph".encode('utf-8') # cluster name. Type:bytes
 user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
 conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
 pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
-block_size   = ctypes.c_int(204800000) # Maximum number of bytes read each time. Type:ctypes.c_int
+block_size   = ctypes.c_int(2147483647) # Maximum number of bytes you want to read(less than 2GB). Type:ctypes.c_int
 oid          = "oid".encode('utf-8') # object id. Type:bytes
 offset       = ctypes.c_ulonglong(0) # where read strat from. Type:ctypes.c_ulonglong
 
@@ -88,9 +83,10 @@ user_name    = "client.objstore".encode('utf-8') # user name. Type:bytes
 conf_file    = "/etc/ceph/ceph.conf".encode('utf-8') # config file path. Type:bytes
 pool_name    = "objstore".encode('utf-8') # pool名称. Type:bytes
 oid          = "oid".encode('utf-8') # object id. Type:bytes
+osize        = ctypes.c_ulonglong(100000) # object size. Type:ctypes.c_ulonglong
 
 # execute
-result = DelObj(cluster_name, user_name, conf_file, pool_name, oid) # return. Type:RetType
+result = DelObj(cluster_name, user_name, conf_file, pool_name, oid, osize) # return. Type:RetType
 stat = result.x # Whether the delete operation executed successfully. Type:bool
 data = ctypes.string_at(result.y,result.z) # The error(a string which can be convertd to a list, list[0]:code; list[1]:description) or success description. Type:bytes
 ```
